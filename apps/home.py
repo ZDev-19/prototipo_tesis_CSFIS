@@ -1,18 +1,18 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
-from data.create_data import create_table
+from apps.system_2d import exec_system_2d
 
 def app():
-    st.title('Home')
+    st.title('Sistema de clustering para factores de exito critico')
 
-    st.write("This is a sample home page in the mutliapp.")
-    st.write("See `apps/home.py` to know how to use it.")
+    st.write("Este es un prototipo de un sistema que permita visualizar clusters de los datos de investigacion")
 
-    st.markdown("### Sample Data")
-    df = create_table()
-    st.write(df)
+    st.markdown("## Seleccione el algoritmo de clustering")
 
-    st.write('Navigate to `Data Stats` page to visualize the data')
-
-
+    algoritmo = st.selectbox("Seleccione un algoritmo de clustering", ["K-Modes","K-Medoids","GMM"])
+    
+    if algoritmo == "K-Modes":
+        exec_system_2d('K-Modes')
+    elif algoritmo == "K-Medoids":
+        exec_system_2d("K-Medoids")
+    elif algoritmo == 'GMM':
+        exec_system_2d("GMM")
