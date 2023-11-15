@@ -2,3 +2,4 @@ streamlit
 numpy
 pandas
 altair<5
+protobuf==3.20.*

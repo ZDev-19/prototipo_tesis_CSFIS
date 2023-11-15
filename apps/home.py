@@ -1,10 +1,10 @@
 import streamlit as st
-from apps.system import exec_system_2d,exec_system_3d
+from apps.system import exec_system
 
 def app():
-    st.title('Sistema de clustering para factores de exito critico')
+    st.title('Sistema de recomendacion de factores de exito critico')
 
-    st.write("Este es un prototipo de un sistema que permita visualizar clusters de los datos de investigacion")
+    st.write("Este es un prototipo de un sistema que le recomendara ciertos factores")
 
     css = """<style>
             .stApp {
@@ -21,31 +21,64 @@ def app():
 
     col1 , col2 = st.columns([1,2])
 
+    df_rec = None
+
     with col1:
-        st.markdown("## Seleccione el algoritmo de clustering")
+        st.header("Asigna tus propios ratings")
 
-        algoritmo = st.selectbox("Seleccione un algoritmo de clustering", ["K-Modes","K-Medoids","GMM"])
+        ip = st.select_slider(
+            'Califica el factor Infraestructura Politica',
+            options=[1,2,3,4,5]
+        )
 
-        n_cluster = st.text_input("Numero de clusters: " , "")
+        ca = st.select_slider(
+            'Califica el factor Control de Accesos',
+            options=[1,2,3,4,5]
+        )
 
-        n_cluster  = 2 if n_cluster == "" else int(n_cluster)
+        gr = st.select_slider(
+            'Califica el factor Gestion del riesgo',
+            options=[1,2,3,4,5]
+        )
 
-        opt = ["2D","3D"]        
+        am = st.select_slider(
+            'Califica el factor Auditoria y Monitoreo',
+            options=[1,2,3,4,5]
+        )
 
-        seleccion = st.radio("Tipo de grafico: " , opt)
+        dc = st.select_slider(
+            'Califica el factor Desarrollo de competencias',
+            options=[1,2,3,4,5]
+        )
+
+        cn = st.select_slider(
+            'Califica el factor Continuidad del Negocio',
+            options=[1,2,3,4,5]
+        )
+
+        ge = st.select_slider(
+            'Califica el factor Gestion de externos',
+            options=[1,2,3,4,5]
+        )
+
+        cc = st.select_slider(
+            'Califica el factor Cultura y concientizacion',
+            options=[1,2,3,4,5]
+        )
+
+        gee = st.select_slider(
+            'Califica el factor Gestion del equipo encargado',
+            options=[1,2,3,4,5]
+        )
+
+        pe = st.select_slider(
+            'Califica el factor Prioridades y Estructura',
+            options=[1,2,3,4,5]
+        )
+
+        if st.button('Enviar',type="primary"):
+            inputs = [ip,ca,gr,am,dc,cn,ge,cc,gee,pe]
+            df_rec = exec_system(inputs)
 
     with col2:
-        if seleccion == '2D':
-            if algoritmo == "K-Modes":
-                exec_system_2d('K-Modes',n_cluster)
-            elif algoritmo == "K-Medoids":
-                exec_system_2d("K-Medoids",n_cluster)
-            elif algoritmo == 'GMM':
-                exec_system_2d("GMM",n_cluster)
-        elif seleccion == '3D':
-            if algoritmo == "K-Modes":
-                exec_system_3d('K-Modes',n_cluster)
-            elif algoritmo == "K-Medoids":
-                exec_system_3d("K-Medoids",n_cluster)
-            elif algoritmo == 'GMM':
-                exec_system_3d("GMM",n_cluster)
+        st.dataframe(df_rec)

@@ -1,51 +1,32 @@
-# Librerias de interfaz y datos
 import streamlit as st
-import pandas as pd
+from utils.functions import *
+from utils.model_functions import *
+from utils.cf_model_class import collab_filtering_based_recommender_model
+from surprise import KNNWithMeans
 
-#Importacion de modelos de ML
-from models.k_modes import doKModes
-from models.k_medoids import doKMedoids
-from models.gmm import doGMM
+sim_options = {
+    "name": ["msd", "cosine", "pearson", "pearson_baseline"],
+    "min_support": [3, 4, 5],
+    "user_based": [True],
+}
+params = { 'k': range(5,50,5), 'sim_options': sim_options}
 
-#Imporacion de reduccion y visualizaciones
-from functions.reduccion import reducirMCA
-from functions.visualizaciones import visualizar2D
-from functions.visualizaciones import visualizar3D
+@st.cache
+def exec_system(inputs=None):
 
-def exec_system_2d(model,clusters):
-    data = pd.read_csv("./data/CSFIS_DEF.csv")
-    componentesPrincipales = reducirMCA(X = data,n_components=2) 
+    surprise_data , trainset , testset = recover_all_data("data/factors_ratings.csv" , inputs)
+
+    clf = find_best_model(KNNWithMeans, params, surprise_data)
+
+    knnwithmeans = clf.best_estimator['rmse']
     
-    clust_labels = None
+    col_fil_knnwithmeans = collab_filtering_based_recommender_model(knnwithmeans, trainset, testset, surprise_data)
 
-    if model == 'K-Modes':
-        clust_labels = doKModes(data,ncluster=clusters)
-    elif model == 'K-Medoids':
-        clust_labels = doKMedoids(componentesPrincipales,ncluster=clusters)
-    elif model == 'GMM':
-        clust_labels = doGMM(componentesPrincipales, n_components=clusters)
+    knnwithmeans_rmse = col_fil_knnwithmeans.fit_and_predict()
 
-    idx = pd.DataFrame(clust_labels)
-    idx= idx.rename(columns = {0: 'Cluster'}, inplace = False)
+    knnwithmeans_cv_rmse = col_fil_knnwithmeans.cross_validate()
 
-    fig = visualizar2D(componentesPrincipales,idx,'CP1','CP2')
-    st.pyplot(fig)
+    result_knn_user = col_fil_knnwithmeans.recommend()
 
-def exec_system_3d(model,clusters):
-    data = pd.read_csv("./data/CSFIS_DEF.csv")
-    componentesPrincipales = reducirMCA(X = data,n_components=3) 
+    return result_knn_user
     
-    clust_labels = None
-
-    if model == 'K-Modes':
-        clust_labels = doKModes(data,ncluster=clusters)
-    elif model == 'K-Medoids':
-        clust_labels = doKMedoids(componentesPrincipales,ncluster=clusters)
-    elif model == 'GMM':
-        clust_labels = doGMM(componentesPrincipales, n_components=clusters)
-
-    idx = pd.DataFrame(clust_labels)
-    idx= idx.rename(columns = {0: 'Cluster'}, inplace = False)
-
-    fig = visualizar3D(componentesPrincipales,idx,'CP1','CP2','CP3')
-    st.pyplot(fig)

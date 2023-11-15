@@ -1,0 +1,11 @@
+factor_id,name,weight,causal_group
+1,Infraestructura Politica,0.112,Effect
+2,Control de Accesos,0.094,Effect
+3,Gestion del Riesgo,0.108,Cause
+4,Auditoria y Monitoreo,0.105,Effect
+5,Desarrollo de competencias,0.095,Cause
+6,Continuidad del Negocio,0.103,Effect
+7,Gestion de externos,0.082,Effect
+8,Cultura y concientitazacion,0.106,Effect
+9,Gestion del equipo encargado,0.094,Effect
+10,Prioridades y Estructura,0.101,Cause
